@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex">
+  <div class="w-full h-screen flex">
     <NavBar 
       :main-drawer-open="mainDrawerOpen"
       @toggle-main-drawer="toggleMainDrawer"

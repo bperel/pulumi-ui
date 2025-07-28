@@ -7,8 +7,8 @@ export interface Stack {
   name: string
   project: string
   resources: Resource[]
-  outputs: Record<string, any>
   readme?: string
+  outputs?: Record<string, any>
 }
 
 export interface Resource {
@@ -16,6 +16,7 @@ export interface Resource {
   type: string
   id: string
   parent?: string
+  urn: string
   dependencies: string[]
   inputs: Record<string, any>
   outputs: Record<string, any>

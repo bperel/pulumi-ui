@@ -1,31 +1,14 @@
 import { readFileSync, readdirSync, existsSync } from 'fs'
 import { join } from 'path'
-import { URL } from 'url'
+import type { Project, Resource, Stack } from '~/types'
 
-export interface Project {
-  name: string
-  stacks: Stack[]
+export interface StateData {
+  deployment: {
+    resources: Resource[]
+  }
 }
 
-export interface Stack {
-  name: string
-  project: string
-  resources: Resource[]
-  outputs: Record<string, any>
-  readme?: string
-}
-
-export interface Resource {
-  name: string
-  type: string
-  id: string
-  parent?: string
-  dependencies: string[]
-  inputs: Record<string, any>
-  outputs: Record<string, any>
-}
-
-export async function listProjects(stateUri: string): Promise<Project[]> {
+export const listProjects = async (stateUri: string) => {
   const projects: Project[] = []
   
   try {
@@ -67,9 +50,9 @@ export async function listProjects(stateUri: string): Promise<Project[]> {
   }
   
   return projects
-}
+};
 
-export async function getStack(stateUri: string, projectName: string, stackName: string): Promise<Stack> {
+export const getStack = async (stateUri: string, projectName: string, stackName: string) => {
   try {
     if (stateUri.startsWith('file://')) {
       const basePath = stateUri.replace('file://', '')
@@ -83,8 +66,14 @@ export async function getStack(stateUri: string, projectName: string, stackName:
       if (!existsSync(stateFile)) {
         throw new Error(`State file not found: ${stateFile}`)
       }
+
+      const outputsFile = join(stackPath, 'outputs.json')
+      let outputs: Record<string, any> | undefined
+      if (existsSync(outputsFile)) {
+         outputs = JSON.parse(readFileSync(outputsFile, 'utf-8')) as Record<string, any>
+      }
       
-      const stateData = JSON.parse(readFileSync(stateFile, 'utf-8'))
+      const stateData = JSON.parse(readFileSync(stateFile, 'utf-8')) as StateData
       
       const resources: Resource[] = []
       if (stateData.deployment.resources) {
@@ -93,6 +82,7 @@ export async function getStack(stateUri: string, projectName: string, stackName:
             name: resource.urn.split('::').pop() || '',
             type: resource.type,
             id: resource.id || '',
+            urn: resource.urn,
             parent: resource.parent,
             dependencies: resource.dependencies || [],
             inputs: resource.inputs || {},
@@ -111,9 +101,9 @@ export async function getStack(stateUri: string, projectName: string, stackName:
         name: stackName,
         project: projectName,
         resources,
-        outputs: stateData.outputs || {},
+        outputs,
         readme
-      }
+      } as const
     } else {
       throw new Error('Cloud storage not yet implemented in TypeScript version')
     }
@@ -121,4 +111,4 @@ export async function getStack(stateUri: string, projectName: string, stackName:
     console.error('Error getting stack:', error)
     throw error
   }
-} 
+}; 

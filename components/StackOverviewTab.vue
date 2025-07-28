@@ -1,6 +1,5 @@
 <template>
   <div v-if="stack" class="space-y-6">
-    <!-- Stack Summary -->
     <div class="bg-white rounded-lg border border-gray-200 p-6">
       <h3 class="text-lg font-semibold text-gray-900 mb-4">Stack Summary</h3>
       
@@ -10,7 +9,7 @@
             <UIcon name="i-heroicons-cube" class="w-5 h-5 text-blue-600" />
             <span class="font-medium text-gray-900">Resources</span>
           </div>
-          <p class="text-2xl font-bold text-gray-900 mt-2">{{ stack.resources.length }}</p>
+          <p class="text-lg font-bold text-gray-900 mt-2">{{ stack.resources.length }}</p>
         </div>
         
         <div class="bg-gray-50 rounded-lg p-4">
@@ -18,7 +17,7 @@
             <UIcon name="i-heroicons-document-text" class="w-5 h-5 text-green-600" />
             <span class="font-medium text-gray-900">Outputs</span>
           </div>
-          <p class="text-2xl font-bold text-gray-900 mt-2">{{ Object.keys(stack.outputs).length }}</p>
+          <p class="text-lg font-bold text-gray-900 mt-2">{{ stack.outputs ? Object.keys(stack.outputs).length : 'No outputs file' }}</p>
         </div>
         
         <div class="bg-gray-50 rounded-lg p-4">
@@ -31,7 +30,6 @@
       </div>
     </div>
     
-    <!-- Resource Types -->
     <div class="bg-white rounded-lg border border-gray-200 p-6">
       <h3 class="text-lg font-semibold text-gray-900 mb-4">Resource Types</h3>
       
@@ -54,12 +52,14 @@
       </div>
     </div>
     
-    <!-- Outputs -->
-    <div v-if="Object.keys(stack.outputs).length > 0" class="bg-white rounded-lg border border-gray-200 p-6">
+    <div class="bg-white rounded-lg border border-gray-200 p-6">
       <h3 class="text-lg font-semibold text-gray-900 mb-4">Outputs</h3>
       
       <div class="space-y-3">
-        <div 
+        <div v-if="!stack.outputs">
+          <p>No outputs file</p>
+        </div>
+        <div v-else
           v-for="(value, key) in stack.outputs" 
           :key="key"
           class="border border-gray-200 rounded-lg p-4"

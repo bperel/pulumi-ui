@@ -1,9 +1,7 @@
 <template>
-  <div class="h-screen flex">
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-  </div>
 </template>
 
 <script setup lang="ts">

@@ -1,7 +1,6 @@
 <template>
   <div class="h-full flex flex-col">
-    <!-- Stack Header -->
-    <div class="bg-white border-b border-gray-200 px-6 py-4">
+        <div class="bg-white border-b border-gray-200 px-6 py-4">
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-semibold text-gray-900">
@@ -41,8 +40,7 @@
       </div>
     </div>
     
-    <!-- Tab Content -->
-    <div class="flex-1 overflow-auto">
+        <div class="flex-1 overflow-auto">
       <div v-if="activeTab === 'overview'" class="p-6">
         <StackOverviewTab :stack="stack" />
       </div>

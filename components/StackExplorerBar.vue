@@ -7,13 +7,11 @@
     ]"
   >
     <div class="h-full flex flex-col">
-      <!-- Header -->
-      <div class="px-4 py-3 border-b border-gray-200">
+            <div class="px-4 py-3 border-b border-gray-200">
         <h2 class="text-lg font-semibold text-gray-900">Projects</h2>
       </div>
       
-      <!-- Projects List -->
-      <div class="flex-1 overflow-y-auto">
+            <div class="flex-1 overflow-y-auto">
         <div v-if="projects.length === 0" class="p-4 text-center text-gray-500">
           <UIcon name="i-heroicons-folder" class="w-8 h-8 mx-auto mb-2 text-gray-400" />
           <p>No projects found</p>
@@ -25,8 +23,7 @@
             :key="project.name"
             class="mb-2"
           >
-            <!-- Project Header -->
-            <button
+                        <button
               class="w-full flex items-center justify-between p-2 rounded hover:bg-gray-50 text-left"
               @click="toggleProjectExpansion(project.name)"
             >
@@ -42,8 +39,7 @@
               <span class="text-sm text-gray-500">{{ project.stacks.length }}</span>
             </button>
             
-            <!-- Stacks List -->
-            <div 
+                        <div 
               v-if="expandedProjects.has(project.name)"
               class="ml-6 space-y-1"
             >

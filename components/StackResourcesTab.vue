@@ -25,8 +25,7 @@
         </div>
       </div>
       
-      <!-- List View -->
-      <div v-if="viewMode === 'list'">
+            <div v-if="viewMode === 'list'">
         <div v-if="stack.resources.length === 0" class="text-center text-gray-500 py-8">
           <UIcon name="i-heroicons-cube" class="w-12 h-12 mx-auto mb-4 text-gray-400" />
           <p>No resources found</p>
@@ -71,8 +70,7 @@
         </div>
       </div>
       
-      <!-- Graph View -->
-      <div v-else-if="viewMode === 'graph'" class="h-96">
+            <div v-else-if="viewMode === 'graph'" class="h-96">
         <div class="text-center text-gray-500 py-8">
           <UIcon name="i-heroicons-squares-2x2" class="w-12 h-12 mx-auto mb-4 text-gray-400" />
           <p>Graph view coming soon</p>
@@ -80,8 +78,7 @@
       </div>
     </div>
     
-    <!-- Resource Details Modal -->
-    <UModal v-model="showResourceModal">
+        <UModal v-model="showResourceModal">
       <UCard v-if="selectedResource">
         <template #header>
           <div class="flex items-center space-x-2">

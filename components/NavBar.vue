@@ -22,8 +22,7 @@
       />
     </div>
     
-    <!-- Bottom Section -->
-    <div class="flex-shrink-0">
+        <div class="flex-shrink-0">
       <UButton
         variant="ghost"
         icon="i-heroicons-cog-6-tooth"
