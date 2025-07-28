@@ -33,6 +33,9 @@ yarn-error.log
 .pnpm-debug.log
 .pnpm-store/
 
+# Nuxt.js
+.nuxt/
+
 # IDEs and editors
 .idea/
 .vscode/

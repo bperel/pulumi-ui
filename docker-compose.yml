@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  pulumi-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PULUMI_STATE_URI=${PULUMI_STATE_URI:-file:///tmp/pulumi-state}
+      - API_BASE=${API_BASE:-/api}
+    volumes:
+      # Mount your Pulumi state directory
+      - ${PULUMI_STATE_PATH:-./pulumi-state}:/tmp/pulumi-state:ro
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3000/api/projects",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Development service (optional)
+  pulumi-ui-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PULUMI_STATE_URI=${PULUMI_STATE_URI:-file:///tmp/pulumi-state}
+      - API_BASE=${API_BASE:-/api}
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ${PULUMI_STATE_PATH:-./pulumi-state}:/tmp/pulumi-state:ro
+    command: ["pnpm", "dev"]
+    profiles:
+      - dev
