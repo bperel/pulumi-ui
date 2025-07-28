@@ -66,30 +66,19 @@ export const getStack = async (stateUri: string, projectName: string, stackName:
       if (!existsSync(stateFile)) {
         throw new Error(`State file not found: ${stateFile}`)
       }
-
-      const outputsFile = join(stackPath, 'outputs.json')
-      let outputs: Record<string, any> | undefined
-      if (existsSync(outputsFile)) {
-         outputs = JSON.parse(readFileSync(outputsFile, 'utf-8')) as Record<string, any>
-      }
       
       const stateData = JSON.parse(readFileSync(stateFile, 'utf-8')) as StateData
       
-      const resources: Resource[] = []
-      if (stateData.deployment.resources) {
-        for (const resource of stateData.deployment.resources) {
-          resources.push({
-            name: resource.urn.split('::').pop() || '',
-            type: resource.type,
-            id: resource.id || '',
-            urn: resource.urn,
-            parent: resource.parent,
-            dependencies: resource.dependencies || [],
-            inputs: resource.inputs || {},
-            outputs: resource.outputs || {}
-          })
-        }
-      }
+      const resources = stateData.deployment.resources?.map(({urn, type, id, parent, dependencies, inputs, outputs}) => ({
+        name: urn.split('::').pop()!,
+        type,
+        id,
+        urn,
+        parent,
+        dependencies,
+        inputs,
+        outputs,
+      }))
       
       let readme: string | undefined
       const readmeFile = join(stackPath, 'README.md')
@@ -101,7 +90,6 @@ export const getStack = async (stateUri: string, projectName: string, stackName:
         name: stackName,
         project: projectName,
         resources,
-        outputs,
         readme
       } as const
     } else {

@@ -17,7 +17,7 @@
             <UIcon name="i-heroicons-document-text" class="w-5 h-5 text-green-600" />
             <span class="font-medium text-gray-900">Outputs</span>
           </div>
-          <p class="text-lg font-bold text-gray-900 mt-2">{{ stack.outputs ? Object.keys(stack.outputs).length : 'No outputs file' }}</p>
+          <p class="text-lg font-bold text-gray-900 mt-2">{{ outputs ? Object.keys(outputs).length : 'No outputs' }}</p>
         </div>
         
         <div class="bg-gray-50 rounded-lg p-4">
@@ -56,11 +56,11 @@
       <h3 class="text-lg font-semibold text-gray-900 mb-4">Outputs</h3>
       
       <div class="space-y-3">
-        <div v-if="!stack.outputs">
-          <p>No outputs file</p>
+        <div v-if="!outputs">
+          <p>No outputs</p>
         </div>
         <div v-else
-          v-for="(value, key) in stack.outputs" 
+          v-for="(value, key) in outputs" 
           :key="key"
           class="border border-gray-200 rounded-lg p-4"
         >
@@ -84,18 +84,14 @@
 import { computed } from 'vue'
 import type { Stack } from '~/types'
 
-interface Props {
+const {stack} = defineProps<{
   stack: Stack | null
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  stack: null
-})
+}>();
 
 const resourceTypes = computed(() => {
-  if (!props.stack) return []
+  if (!stack) return []
   
-  const typeCounts = props.stack.resources.reduce((acc, resource) => {
+  const typeCounts = stack.resources.reduce((acc, resource) => {
     acc[resource.type] = (acc[resource.type] || 0) + 1
     return acc
   }, {} as Record<string, number>)
@@ -105,4 +101,8 @@ const resourceTypes = computed(() => {
     count
   })).sort((a, b) => b.count - a.count)
 })
+
+const outputs = computed(() =>
+  stack?.resources.find(({type}) => type === 'pulumi:pulumi:Stack')?.outputs
+)
 </script> 

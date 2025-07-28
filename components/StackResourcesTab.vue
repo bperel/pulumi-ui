@@ -53,7 +53,7 @@
                   <span class="font-medium">Parent:</span> {{ resource.parent }}
                 </div>
                 
-                <div v-if="resource.dependencies.length > 0" class="text-sm text-gray-600">
+                <div v-if="resource.dependencies?.length" class="text-sm text-gray-600">
                   <span class="font-medium">Dependencies:</span> {{ resource.dependencies.join(', ') }}
                 </div>
               </div>
@@ -106,12 +106,12 @@
             </div>
           </div>
           
-          <div v-if="Object.keys(selectedResource.inputs).length > 0">
+          <div v-if="selectedResource.inputs && Object.keys(selectedResource.inputs).length > 0">
             <h4 class="font-medium text-gray-900 mb-2">Inputs</h4>
             <pre class="text-sm text-gray-700 bg-gray-50 p-3 rounded overflow-x-auto">{{ JSON.stringify(selectedResource.inputs, null, 2) }}</pre>
           </div>
           
-          <div v-if="Object.keys(selectedResource.outputs).length > 0">
+          <div v-if="selectedResource.outputs && Object.keys(selectedResource.outputs).length > 0">
             <h4 class="font-medium text-gray-900 mb-2">Outputs</h4>
             <pre class="text-sm text-gray-700 bg-gray-50 p-3 rounded overflow-x-auto">{{ JSON.stringify(selectedResource.outputs, null, 2) }}</pre>
           </div>
@@ -147,7 +147,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const viewMode = ref<'list' | 'graph'>('list')
-const selectedResource = ref<Resource | null>(null)
+const selectedResource = ref<Resource >()
 const showResourceModal = ref(false)
 
 watch(selectedResource, (resource) => {

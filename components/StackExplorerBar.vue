@@ -62,7 +62,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { Project, Stack } from '~/types'
 
 interface Props {
