@@ -13,7 +13,7 @@ export interface Stack {
 export interface Resource {
   name: string
   type: string
-  id: string
+  id?: string
   parent?: string
   urn: string
   dependencies?: string[]
