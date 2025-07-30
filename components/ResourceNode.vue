@@ -24,6 +24,10 @@
     <div class="text-xs truncate" :class="getIdClasses()">
       {{ getShortId(data.resource.urn) }}
     </div>
+    
+    <!-- Edge handles for proper routing -->
+    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-transparent" data-handleid="top"></div>
+    <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-transparent" data-handleid="bottom"></div>
   </div>
 </template>
 
@@ -39,7 +43,7 @@ interface NodeData {
   isConnected?: boolean
 }
 
-const props = defineProps<{
+const {data, selected} = defineProps<{
   data: NodeData
   selected: boolean
 }>()
@@ -68,11 +72,11 @@ const getShortId = (urn: string) => {
 }
 
 const getNodeClasses = () => {
-  if (props.data.isSelected) {
+  if (data.isSelected) {
     return 'border-blue-500 bg-blue-50 shadow-lg scale-105'
-  } else if (props.data.isConnected) {
+  } else if (data.isConnected) {
     return 'border-blue-300 bg-blue-25 shadow-md'
-  } else if (props.selected) {
+  } else if (selected) {
     return 'border-blue-500 bg-blue-50 shadow-md'
   } else {
     return 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
@@ -80,9 +84,9 @@ const getNodeClasses = () => {
 }
 
 const getIconClasses = () => {
-  if (props.data.isSelected) {
+  if (data.isSelected) {
     return 'text-blue-700'
-  } else if (props.data.isConnected) {
+  } else if (data.isConnected) {
     return 'text-blue-600'
   } else {
     return 'text-blue-600'
@@ -90,9 +94,9 @@ const getIconClasses = () => {
 }
 
 const getTextClasses = () => {
-  if (props.data.isSelected) {
+  if (data.isSelected) {
     return 'text-blue-900'
-  } else if (props.data.isConnected) {
+  } else if (data.isConnected) {
     return 'text-blue-800'
   } else {
     return 'text-gray-900'
@@ -100,9 +104,9 @@ const getTextClasses = () => {
 }
 
 const getTypeClasses = () => {
-  if (props.data.isSelected) {
+  if (data.isSelected) {
     return 'text-blue-700'
-  } else if (props.data.isConnected) {
+  } else if (data.isConnected) {
     return 'text-blue-600'
   } else {
     return 'text-gray-500'
@@ -110,9 +114,9 @@ const getTypeClasses = () => {
 }
 
 const getIdClasses = () => {
-  if (props.data.isSelected) {
+  if (data.isSelected) {
     return 'text-blue-600'
-  } else if (props.data.isConnected) {
+  } else if (data.isConnected) {
     return 'text-blue-500'
   } else {
     return 'text-gray-400'
@@ -120,9 +124,9 @@ const getIdClasses = () => {
 }
 
 const getLevelTextClasses = () => {
-  if (props.data.isSelected) {
+  if (data.isSelected) {
     return 'text-blue-600'
-  } else if (props.data.isConnected) {
+  } else if (data.isConnected) {
     return 'text-blue-500'
   } else {
     return 'text-gray-400'
