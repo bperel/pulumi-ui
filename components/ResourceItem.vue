@@ -8,10 +8,13 @@
                     <span class="text-sm text-gray-500">({{ resource.type }})</span>
                 </div>
                 <div>
-                    <UTable :data="tableData" :columns="columns" class="flex-1">
+                    <UTable :data="tableData" :columns="columns"
+                        @hover="(_, row) => hoveredProperty = row?.original.name"
+                        class="flex-1 [&_th:nth-child(1)]:w-20 [&_th:nth-child(2)]:w-20">
                         <template #actions-cell="{ row }">
                             <template v-if="row.original.editable">
-                                <div v-if="editingProperty === row.original.name" class="flex items-center space-x-2">
+                                <div v-if="editingProperty === row.original.name"
+                                    class="flex items-center space-x-2 h-8">
                                     <div class="flex items-center w-20">
                                         <UButton variant="ghost" size="sm" color="success" @click="saveEdit">
                                             <UIcon name="i-heroicons-check" class="w-4 h-4" />
@@ -21,13 +24,16 @@
                                         </UButton>
                                     </div>
                                 </div>
-                                <div v-else class="flex justify-center items-center w-20">
+                                <div v-else-if="hoveredProperty === row.original.name"
+                                    class="flex justify-center items-center w-20 h-8">
                                     <UButton variant="ghost" size="sm"
                                         @click="editingResource = resource; editingProperty = row.original.name">
                                         <UIcon name="i-heroicons-pencil" class="w-6 h-4" />
                                     </UButton>
                                 </div>
+                                <div v-else class="w-20 h-8"></div>
                             </template>
+                            <div v-else class="w-20 h-8"></div>
                         </template>
                         <template #value-cell="{ row }">
                             <ResourceSelect v-if="row.original.name === 'parent'"
@@ -39,7 +45,7 @@
                             <UInput v-else-if="editingProperty === row.original.name"
                                 v-model="resource[row.original.name as 'name']" placeholder="Resource name"
                                 @keyup.enter="saveEdit" @keyup.esc="cancelEdit" class="flex-1 min-w-fit" />
-                            <span v-else class="font-medium text-gray-900">{{ resource.name }}</span>
+                            <span v-else class="font-medium text-gray-900">{{ row.original.value }}</span>
                         </template>
                     </UTable>
                 </div>
@@ -73,7 +79,9 @@ type ResourceProperty = {
 }
 
 const columns: TableColumn<ResourceProperty>[] = [
-    { id: 'actions' },
+    {
+        id: 'actions',
+    },
     {
         accessorKey: 'name',
     },
@@ -90,6 +98,8 @@ const tableData = computed<ResourceProperty[]>(() => Object.entries(resource).ma
 
 const editingResource = ref<Resource>()
 const editingProperty = ref<keyof Resource>()
+
+const hoveredProperty = ref<keyof Resource>()
 
 const saveEdit = () => {
     // TODO
