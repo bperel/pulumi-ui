@@ -16,10 +16,12 @@
                                 <div v-if="editingProperty === row.original.name"
                                     class="flex items-center space-x-2 h-8">
                                     <div class="flex items-center w-20">
-                                        <UButton variant="ghost" size="sm" color="success" @click="saveEdit">
+                                        <UButton variant="ghost" size="sm" color="success" @click="saveEdit"
+                                            :loading="isSaving" :disabled="isSaving">
                                             <UIcon name="i-heroicons-check" class="w-4 h-4" />
                                         </UButton>
-                                        <UButton variant="ghost" size="sm" color="error" @click="cancelEdit">
+                                        <UButton variant="ghost" size="sm" color="error" @click="cancelEdit"
+                                            :disabled="isSaving">
                                             <UIcon name="i-heroicons-x-mark" class="w-4 h-4" />
                                         </UButton>
                                     </div>
@@ -27,7 +29,7 @@
                                 <div v-else-if="hoveredProperty === row.original.name"
                                     class="flex justify-center items-center w-20 h-8">
                                     <UButton variant="ghost" size="sm"
-                                        @click="editingResource = resource; editingProperty = row.original.name">
+                                        @click="editingResource = {...resource}; editingProperty = row.original.name">
                                         <UIcon name="i-heroicons-pencil" class="w-6 h-4" />
                                     </UButton>
                                 </div>
@@ -36,16 +38,19 @@
                             <div v-else class="w-20 h-8"></div>
                         </template>
                         <template #value-cell="{ row }">
-                            <ResourceSelect v-if="row.original.name === 'parent'"
-                                :is-editing="editingProperty === row.original.name"
-                                v-model="resource[row.original.name]" :list="availableResources"
-                                @start-edit="editingResource = resource; editingProperty = row.original.name"
-                                @save="saveEdit" @cancel="cancelEdit" />
+                            <template v-if="editingProperty === row.original.name">
+                                <ResourceSelect v-if="row.original.name === 'parent'"
+                                    v-model="editingResource![row.original.name]" :list="availableResources"
+                                    @start-edit="editingResource = resource; editingProperty = row.original.name"
+                                    @save="saveEdit" @cancel="cancelEdit" />
 
-                            <UInput v-else-if="editingProperty === row.original.name"
-                                v-model="resource[row.original.name as 'name']" placeholder="Resource name"
-                                @keyup.enter="saveEdit" @keyup.esc="cancelEdit" class="flex-1 min-w-fit" />
-                            <span v-else class="font-medium text-gray-900">{{ row.original.value }}</span>
+                                <UInput v-else-if="row.original.name === 'name'"
+                                    v-model="editingResource![row.original.name]" placeholder="Resource name"
+                                    @keyup.enter="saveEdit" @keyup.esc="cancelEdit" :disabled="isSaving"
+                                    class="flex-1 min-w-fit" />
+                            </template>
+                            <span v-else class="font-medium text-gray-900">{{ row.original.value
+                                }}</span>
                         </template>
                     </UTable>
                 </div>
@@ -63,7 +68,8 @@ import type { Resource } from '~/types'
 import ResourceSelect from './ResourceSelect.vue'
 import type { TableColumn } from '@nuxt/ui';
 
-const { resource, availableResources } = defineProps<{
+const { stackName, resource, availableResources } = defineProps<{
+    stackName: string
     resource: Resource
     availableResources: Resource[]
 }>()
@@ -98,11 +104,56 @@ const tableData = computed<ResourceProperty[]>(() => Object.entries(resource).ma
 
 const editingResource = ref<Resource>()
 const editingProperty = ref<keyof Resource>()
+const isSaving = ref(false)
 
 const hoveredProperty = ref<keyof Resource>()
 
-const saveEdit = () => {
-    // TODO
+const saveEdit = async () => {
+    if (!editingResource.value || !editingProperty.value) return
+
+    // Only handle resource name renaming for now
+    if (editingProperty.value === 'name') {
+        isSaving.value = true
+        try {
+            const route = useRoute()
+            const projectName = route.params.projectName as string
+            const urn = editingResource.value.urn
+            const newName = resource.name
+
+            // Call the backend API to rename the resource
+            const response = await $fetch(`/api/projects/${projectName}/stacks/${stackName}/resources/${encodeURIComponent(urn)}/rename`, {
+                method: 'POST',
+                body: {
+                    newName: newName
+                }
+            })
+
+            // Show success notification
+            const toast = useToast()
+            toast.add({
+                title: 'Resource renamed',
+                description: response?.message || `Resource renamed to ${newName}`,
+                color: 'success'
+            })
+        } catch (error: any) {
+            console.error('Error renaming resource:', error)
+
+            // Show error notification
+            const toast = useToast()
+            toast.add({
+                title: 'Error renaming resource',
+                description: error?.data?.statusMessage || error?.message || 'Failed to rename resource',
+                color: 'error'
+            })
+
+            // Revert the name change
+            if (editingResource.value) {
+                resource.name = editingResource.value.name
+            }
+        } finally {
+            isSaving.value = false
+        }
+    }
 
     editingResource.value = undefined
     editingProperty.value = undefined

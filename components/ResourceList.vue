@@ -8,6 +8,7 @@
     <ResourceItem
       v-for="resource in stack.resources"
       :key="resource.urn"
+      :stack-name="stack.name"
       :resource="resource"
       :available-resources="stack.resources.filter(r => r.urn !== resource.urn)"
       @view-resource="emit('viewResource', $event)"
