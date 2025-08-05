@@ -1,0 +1,14 @@
+import { listStacks } from "~/server/utils/pulumi-state";
+
+export default defineEventHandler(async (event) => {  
+    const { projectName } = getRouterParams(event);
+    try {
+      return await listStacks(projectName!)
+    } catch (error) {
+      console.error('Error fetching projects:', error)
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Failed to fetch projects'
+      })
+    }
+  }) 

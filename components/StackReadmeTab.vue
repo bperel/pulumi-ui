@@ -24,18 +24,14 @@
 import { computed } from 'vue'
 import type { Stack } from '~/types'
 
-interface Props {
+const {stack = null} = defineProps<{
   stack: Stack | null
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  stack: null
-})
+}>()
 
 const renderedReadme = computed(() => {
-  if (!props.stack?.readme) return ''
+  if (!stack?.readme) return ''
   
-  return props.stack.readme
+  return stack.readme
     .replace(/\n/g, '<br>')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')

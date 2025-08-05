@@ -1,6 +1,11 @@
 export interface Project {
   name: string
-  stacks: Stack[]
+  stackCount: number
+}
+
+export interface SimpleStack {
+  name: string
+  resourceCount: number
 }
 
 export interface Stack {
@@ -8,6 +13,11 @@ export interface Stack {
   project: string
   resources: Resource[]
   readme?: string
+}
+
+export interface GetStackResponse {
+  resources: Resource[]
+  outputs: Record<string, string>
 }
 
 export interface Resource {

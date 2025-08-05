@@ -1,12 +1,10 @@
 import { getStack } from '~/server/utils/pulumi-state'
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
   const { projectName, stackName } = getRouterParams(event)
   
   try {
-    const stack = await getStack(config.pulumiStateUri, projectName!, stackName!)
-    return stack
+    return await getStack(stackName!)
   } catch (error) {
     console.error('Error fetching stack:', error)
     throw createError({

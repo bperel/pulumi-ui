@@ -1,20 +1,13 @@
 <template>
   <div class="w-full h-screen flex">
     <NavBar 
-      :main-drawer-open="mainDrawerOpen"
-      @toggle-main-drawer="toggleMainDrawer"
-      @toggle-projects-drawer="toggleProjectsDrawer"
-      :projects-drawer-open="projectsDrawerOpen"
+      v-model:open="projectsDrawerOpen"
     />
     
     <StackExplorerBar
-      :projects="projects"
-      :selected-stack="selectedStack"
-      :projects-drawer-open="projectsDrawerOpen"
-      :main-drawer-open="mainDrawerOpen"
-      :expanded-projects="expandedProjects"
-      @toggle-project-expansion="toggleProjectExpansion"
-      @fetch-stack="fetchStack"
+      :stacks="stacks"
+      :open="projectsDrawerOpen"
+      v-model:expanded-project="expandedProject"
     />
     
     <main class="flex-1 h-full overflow-hidden">
@@ -26,77 +19,48 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import type { Project, Stack } from '~/types'
 
-const mainDrawerOpen = ref(false)
 const projectsDrawerOpen = ref(false)
-const projects = ref<Project[]>([])
-const selectedStack = ref<Stack | null>(null)
-const expandedProjects = ref<Set<string>>(new Set())
-
-const toggleMainDrawer = () => {
-  mainDrawerOpen.value = !mainDrawerOpen.value
-}
-
-const toggleProjectsDrawer = () => {
-  projectsDrawerOpen.value = !projectsDrawerOpen.value
-}
-
-const toggleProjectExpansion = (projectName: string) => {
-  const newSet = new Set(expandedProjects.value)
-  if (newSet.has(projectName)) {
-    newSet.delete(projectName)
-  } else {
-    newSet.add(projectName)
-  }
-  expandedProjects.value = newSet
-}
-
-const fetchStack = async (projectName: string, stackName: string) => {
-  try {
-    console.log('Fetching stack:', projectName, stackName)
-    const data = await $fetch(`/api/projects/${projectName}/stacks/${stackName}`)
-    console.log('Stack data received:', data)
-    selectedStack.value = data
-  } catch (error) {
-    console.error('Error fetching stack:', error)
-  }
-}
-
-const fetchProjects = async () => {
-  try {
-    const data = await $fetch('/api/projects')
-    projects.value = data
-  } catch (error) {
-    console.error('Error fetching projects:', error)
-  }
-}
+const expandedProject = ref<string>()
 
 const route = useRoute()
+
+const { projects, stacks, currentProject, currentStack } = storeToRefs(usePulumiStore())
+const { fetchProjects, fetchStacks, fetchStackResources } = usePulumiStore()
 
 onMounted(() => {
   fetchProjects()
 })
 
-watch(() => route.params, async (newParams) => {
-  console.log('Route params changed:', newParams)
-  if (newParams.projectName && newParams.stackName) {
-    console.log('Fetching stack for params:', newParams.projectName, newParams.stackName)
-    await fetchStack(newParams.projectName as string, newParams.stackName as string)
+watch([projects, () => route.params.projectName], () => {
+  projectsDrawerOpen.value = true
+  if (route.params.projectName) {
+    expandedProject.value = route.params.projectName as string
   }
-}, { immediate: true })
+})
 
-provide('mainDrawerOpen', mainDrawerOpen)
-provide('projectsDrawerOpen', projectsDrawerOpen)
-provide('projects', projects)
-provide('selectedStack', selectedStack)
-provide('stackData', selectedStack)
-provide('expandedProjects', expandedProjects)
-provide('toggleMainDrawer', toggleMainDrawer)
-provide('toggleProjectsDrawer', toggleProjectsDrawer)
-provide('toggleProjectExpansion', toggleProjectExpansion)
-provide('fetchStack', fetchStack)
+watch(expandedProject, () => {
+  debugger
+  if (expandedProject.value) {
+    currentProject.value = projects.value.find(project => project.name === expandedProject.value)
+    if (!currentProject.value) {
+      window.alert('Project not found')
+    }
+    else {
+      fetchStacks()
+    }
+  }
+})
 
-const reactiveStack = computed(() => selectedStack.value)
-provide('reactiveStack', reactiveStack)
+watch([stacks, () => route.params.stackName], () => {
+  if (route.params.stackName) {
+    currentStack.value = stacks.value.find(stack => stack.name === route.params.stackName)
+    if (!currentStack.value) {
+      window.alert('Stack not found')
+    }
+    else {
+      fetchStackResources()
+    }
+  }
+})
 </script> 

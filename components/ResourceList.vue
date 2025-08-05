@@ -11,20 +11,15 @@
       :stack-name="stack.name"
       :resource="resource"
       :available-resources="stack.resources.filter(r => r.urn !== resource.urn)"
-      @view-resource="emit('viewResource', $event)"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Stack, Resource } from '~/types'
+import type { Stack } from '~/types'
 import ResourceItem from './ResourceItem.vue'
 
 const {stack} = defineProps<{
   stack: Stack
-}>()
-
-const emit = defineEmits<{
-  viewResource: [resource: Resource]
 }>()
 </script> 

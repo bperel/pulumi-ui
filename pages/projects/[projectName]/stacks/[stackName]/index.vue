@@ -63,8 +63,7 @@ import type { Stack } from '~/types'
 
 const route = useRoute()
 const activeTab = ref<'overview' | 'readme' | 'resources'>('overview')
-
-const reactiveStack = inject<ComputedRef<Stack | null>>('reactiveStack', computed(() => null))
+const { fetchStackResources } = usePulumiStore()
 
 const stack = computed(() => reactiveStack?.value)
 
@@ -78,5 +77,9 @@ watch(activeTab, (newTab) => {
   navigateTo({
     query: { ...route.query, tab: newTab }
   }, { replace: true })
+})
+
+onMounted(() => {
+  fetchStackResources()
 })
 </script> 

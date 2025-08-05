@@ -1,102 +1,57 @@
-import { readFileSync, readdirSync, existsSync } from 'fs'
-import { join } from 'path'
-import type { Project, Resource, Stack } from '~/types'
+import { execFileSync, execSync } from "child_process";
+import type { GetStackResponse, Project, Resource, SimpleStack } from "~/types";
 
 export interface StateData {
   deployment: {
-    resources: Resource[]
-  }
+    resources: Resource[];
+  };
 }
 
-export const listProjects = async (stateUri: string) => {
-  const projects: Project[] = []
-  
-  try {
-    if (stateUri.startsWith('file://')) {
-      const basePath = stateUri.replace('file://', '')
-      const projectDirs = readdirSync(basePath, { withFileTypes: true })
-        .filter(dirent => dirent.isDirectory())
-        .map(dirent => dirent.name)
-      
-      for (const projectName of projectDirs) {
-        const projectPath = join(basePath, projectName)
-        const stackDirs = readdirSync(projectPath, { withFileTypes: true })
-          .filter(dirent => dirent.isDirectory())
-          .map(dirent => dirent.name)
-        
-        const stacks: Stack[] = []
-        for (const stackName of stackDirs) {
-          try {
-            const stack = await getStack(stateUri, projectName, stackName)
-            stacks.push(stack)
-          } catch (error) {
-            console.warn(`Failed to load stack ${stackName} in project ${projectName}:`, error)
-          }
-        }
-        
-        projects.push({
-          name: projectName,
-          stacks
-        })
-      }
-    } else {
-      // Handle S3, GS, Azure paths using AWS SDK v3 or similar
-      // This would need to be implemented using Node.js cloud storage libraries
-      throw new Error('Cloud storage not yet implemented in TypeScript version')
-    }
-  } catch (error) {
-    console.error('Error listing projects:', error)
-    throw error
-  }
-  
-  return projects
-};
+export const getPulumiBin = () => execSync(`which pulumi`).toString().trim();
 
-export const getStack = async (stateUri: string, projectName: string, stackName: string) => {
+export const listStacks = async (projectName: string) =>
+  JSON.parse(
+    execFileSync(`${getPulumiBin()}`, [
+      "stack",
+      "ls",
+      "--project",
+      projectName,
+      "--json",
+    ]).toString()
+    ) as SimpleStack[];
+
+export const listProjects = async () =>
+  JSON.parse(
+    execFileSync(`${getPulumiBin()}`, ["project", "ls", "--json"]).toString()
+  ) as Project[];
+
+export const getStack = async (
+  stackName: string
+) => {
   try {
-    if (stateUri.startsWith('file://')) {
-      const basePath = stateUri.replace('file://', '')
-      const stackPath = join(basePath, projectName, stackName)
-      
-      if (!existsSync(stackPath)) {
-        throw new Error(`Stack path does not exist: ${stackPath}`)
-      }
-      
-      const stateFile = join(stackPath, 'state.json')
-      if (!existsSync(stateFile)) {
-        throw new Error(`State file not found: ${stateFile}`)
-      }
-      
-      const stateData = JSON.parse(readFileSync(stateFile, 'utf-8')) as StateData
-      
-      const resources = stateData.deployment.resources?.map(({urn, type, id, parent, dependencies, inputs, outputs}) => ({
-        name: urn.split('::').pop()!,
-        type,
-        id,
-        urn,
-        parent,
-        dependencies,
-        inputs,
-        outputs,
-      }))
-      
-      let readme: string | undefined
-      const readmeFile = join(stackPath, 'README.md')
-      if (existsSync(readmeFile)) {
-        readme = readFileSync(readmeFile, 'utf-8')
-      }
-      
-      return {
-        name: stackName,
-        project: projectName,
-        resources,
-        readme
-      } as const
-    } else {
-      throw new Error('Cloud storage not yet implemented in TypeScript version')
-    }
+    const stackResources = JSON.parse(
+      execFileSync(`${getPulumiBin()}`, [
+        `stack`,
+        `export`,
+        `--stack`,
+        stackName,
+      ]).toString()
+    ) as StateData;
+    const stackOutputs = JSON.parse(
+      execFileSync(`${getPulumiBin()}`, [
+        `stack`,
+        `output`,
+        `--json`,
+      ]).toString()
+    ) as Record<string, string>;
+
+    return {
+      resources: stackResources.deployment.resources,
+      outputs: stackOutputs,
+    } as GetStackResponse;
+
   } catch (error) {
-    console.error('Error getting stack:', error)
-    throw error
+    console.error("Error getting stack:", error);
+    throw error;
   }
-}; 
+};

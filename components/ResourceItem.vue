@@ -56,10 +56,6 @@
                 </div>
             </div>
         </div>
-
-        <UButton variant="ghost" size="sm" @click="emit('viewResource', resource)">
-            <UIcon name="i-heroicons-eye" class="w-4 h-4" />
-        </UButton>
     </div>
 </template>
 
@@ -74,15 +70,13 @@ const { stackName, resource, availableResources } = defineProps<{
     availableResources: Resource[]
 }>()
 
-const emit = defineEmits<{
-    viewResource: [resource: Resource]
-}>()
-
 type ResourceProperty = {
     name: keyof Resource,
     value: Resource[keyof Resource]
     editable: boolean
 }
+
+const { fetchStackResources } = usePulumiStore()
 
 const columns: TableColumn<ResourceProperty>[] = [
     {
@@ -117,8 +111,8 @@ const saveEdit = async () => {
         try {
             const route = useRoute()
             const projectName = route.params.projectName as string
-            const urn = editingResource.value.urn
-            const newName = resource.name
+            const urn = resource.urn
+            const newName = editingResource.value.name
 
             // Call the backend API to rename the resource
             const response = await $fetch(`/api/projects/${projectName}/stacks/${stackName}/resources/${encodeURIComponent(urn)}/rename`, {
@@ -135,6 +129,7 @@ const saveEdit = async () => {
                 description: response?.message || `Resource renamed to ${newName}`,
                 color: 'success'
             })
+            fetchStackResources()
         } catch (error: any) {
             console.error('Error renaming resource:', error)
 

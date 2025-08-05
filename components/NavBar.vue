@@ -7,45 +7,17 @@
     </div>
     
     <div class="flex-1 flex flex-col space-y-2">
-      <UButton
-        variant="ghost"
-        icon="i-heroicons-bars-3"
-        :class="{ 'bg-blue-50 text-blue-600': mainDrawerOpen }"
-        @click="$emit('toggle-main-drawer')"
-      />
       
       <UButton
         variant="ghost"
         icon="i-heroicons-folder"
         :class="{ 'bg-blue-50 text-blue-600': projectsDrawerOpen }"
-        @click="$emit('toggle-projects-drawer')"
-      />
-    </div>
-    
-        <div class="flex-shrink-0">
-      <UButton
-        variant="ghost"
-        icon="i-heroicons-cog-6-tooth"
-        @click="openSettings"
+        @click="projectsDrawerOpen = !projectsDrawerOpen"
       />
     </div>
   </nav>
 </template>
 
 <script setup lang="ts">
-interface Props {
-  mainDrawerOpen: boolean
-  projectsDrawerOpen: boolean
-}
-
-defineProps<Props>()
-
-defineEmits<{
-  'toggle-main-drawer': []
-  'toggle-projects-drawer': []
-}>()
-
-const openSettings = () => {
-  console.log('Open settings')
-}
+const projectsDrawerOpen = defineModel<boolean>('open')
 </script> 

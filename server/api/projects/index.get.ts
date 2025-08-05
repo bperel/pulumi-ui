@@ -1,11 +1,8 @@
 import { listProjects } from '~/server/utils/pulumi-state'
 
-export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
-  
+export default defineEventHandler(async () => {  
   try {
-    const projects = await listProjects(config.pulumiStateUri)
-    return projects
+    return await listProjects()
   } catch (error) {
     console.error('Error fetching projects:', error)
     throw createError({

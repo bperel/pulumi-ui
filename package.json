@@ -8,6 +8,8 @@
 	"scripts": {
 		"build": "nuxt build",
 		"dev": "nuxt dev",
+		"dev:staging": "nuxt dev --dotenv .env.staging",
+		"dev:production": "nuxt dev --dotenv .env.production",
 		"generate": "nuxt generate",
 		"preview": "nuxt preview",
 		"postinstall": "nuxt prepare"
@@ -20,10 +22,12 @@
 	},
 	"dependencies": {
 		"@nuxt/ui": "^3.0.0",
+		"@pinia/nuxt": "^0.11.2",
 		"@vue-flow/background": "^1.3.2",
 		"@vue-flow/controls": "^1.1.2",
 		"@vue-flow/core": "^1.45.0",
 		"@vue-flow/minimap": "^1.5.3",
+		"pinia": "^3.0.3",
 		"vue": "^3.4.0"
 	}
 }
