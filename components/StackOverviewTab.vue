@@ -9,7 +9,7 @@
             <UIcon name="i-heroicons-cube" class="w-5 h-5 text-blue-600" />
             <span class="font-medium text-gray-900">Resources</span>
           </div>
-          <p class="text-lg font-bold text-gray-900 mt-2">{{ stack.resources.length }}</p>
+          <p class="text-lg font-bold text-gray-900 mt-2">{{ stack.resources?.length }}</p>
         </div>
         
         <div class="bg-gray-50 rounded-lg p-4">
@@ -84,16 +84,14 @@
 import { computed } from 'vue'
 import type { GetStackResponse } from '~/types'
 
-const {stack} = defineProps<{
-  stack: GetStackResponse
-}>();
+const stack = computed(() => usePulumiStore().currentStackDetails!)
 
 const projectName = computed(() => usePulumiStore().currentProjectName!)
 
 const resourceTypes = computed(() => {
   if (!stack) return []
   
-  const typeCounts = stack.resources.reduce((acc, resource) => {
+  const typeCounts = stack.value.resources.reduce((acc, resource) => {
     acc[resource.type] = (acc[resource.type] || 0) + 1
     return acc
   }, {} as Record<string, number>)
@@ -105,6 +103,6 @@ const resourceTypes = computed(() => {
 })
 
 const outputs = computed(() =>
-  stack?.resources.find(({type}) => type === 'pulumi:pulumi:Stack')?.outputs
+  stack.value.resources.find(({type}) => type === 'pulumi:pulumi:Stack')?.outputs
 )
 </script> 

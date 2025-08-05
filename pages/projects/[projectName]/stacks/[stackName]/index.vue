@@ -42,15 +42,15 @@
     
         <div class="flex-1 overflow-auto">
       <div v-if="activeTab === 'overview'" class="p-6">
-        <StackOverviewTab :stack="currentStackDetails" />
+        <StackOverviewTab  />
       </div>
       
       <div v-else-if="activeTab === 'readme'" class="p-6">
-        <StackReadmeTab :stack="currentStackDetails" />
+        <StackReadmeTab  />
       </div>
       
       <div v-else-if="activeTab === 'resources'" class="p-6">
-        <StackResourcesTab :stack="currentStackDetails" />
+        <StackResourcesTab  />
       </div>
     </div>
   </div>

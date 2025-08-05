@@ -23,9 +23,7 @@ export default defineNuxtConfig({
   
   css: ['~/assets/css/main.css'],
   
-  runtimeConfig: {
-    pulumiStateUri: process.env.PULUMI_STATE_URI || 'file:///tmp/pulumi-state',
-    
+  runtimeConfig: {    
     public: {
       apiBase: process.env.API_BASE || '/api'
     }

@@ -24,14 +24,12 @@
 import { computed } from 'vue'
 import type { GetStackResponse } from '~/types'
 
-const {stack } = defineProps<{
-  stack: GetStackResponse
-}>()
+const stack = computed(() => usePulumiStore().currentStackDetails!)
 
 const renderedReadme = computed(() => {
-  if (!stack.readme) return ''
+  if (!stack.value.readme) return ''
   
-  return stack.readme
+  return stack.value.readme
     .replace(/\n/g, '<br>')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')

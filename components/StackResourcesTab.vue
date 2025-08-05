@@ -46,14 +46,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import type { GetStackResponse, Stack } from '~/types'
+import { computed, ref } from 'vue'
 import ResourceList from './ResourceList.vue'
 import ResourceGraph from './ResourceGraph.vue'
 
-const {stack} = defineProps<{
-  stack: GetStackResponse
-}>();
+const stack = computed(() => usePulumiStore().currentStackDetails!)
 
 const viewMode = ref<'list' | 'graph'>('list')
 
