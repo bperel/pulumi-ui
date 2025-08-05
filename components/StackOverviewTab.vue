@@ -25,7 +25,7 @@
             <UIcon name="i-heroicons-folder" class="w-5 h-5 text-purple-600" />
             <span class="font-medium text-gray-900">Project</span>
           </div>
-          <p class="text-lg font-semibold text-gray-900 mt-2">{{ stack.project }}</p>
+          <p class="text-lg font-semibold text-gray-900 mt-2">{{ projectName }}</p>
         </div>
       </div>
     </div>
@@ -82,11 +82,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Stack } from '~/types'
+import type { GetStackResponse } from '~/types'
 
 const {stack} = defineProps<{
-  stack: Stack | null
+  stack: GetStackResponse
 }>();
+
+const projectName = computed(() => usePulumiStore().currentProjectName!)
 
 const resourceTypes = computed(() => {
   if (!stack) return []

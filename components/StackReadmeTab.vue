@@ -22,14 +22,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Stack } from '~/types'
+import type { GetStackResponse } from '~/types'
 
-const {stack = null} = defineProps<{
-  stack: Stack | null
+const {stack } = defineProps<{
+  stack: GetStackResponse
 }>()
 
 const renderedReadme = computed(() => {
-  if (!stack?.readme) return ''
+  if (!stack.readme) return ''
   
   return stack.readme
     .replace(/\n/g, '<br>')

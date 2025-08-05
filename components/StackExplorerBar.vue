@@ -84,7 +84,7 @@ const emit = defineEmits<{
   "fetch-stack": [projectName: string, stackName: string];
 }>();
 
-const { projects, currentProject, stacks, currentStack } = storeToRefs(
+const { projects, currentProjectName, stacks, currentStackName } = storeToRefs(
   usePulumiStore()
 );
 
@@ -94,5 +94,5 @@ const selectStack = (projectName: string, stackName: string) => {
 };
 
 const isSelectedStack = (projectName: string, stackName: string) =>
-  currentProject.value?.name === projectName && currentStack.value?.name === stackName;
+  currentProjectName.value === projectName && currentStackName.value === stackName;
 </script>

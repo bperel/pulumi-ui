@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
   const { projectName, stackName } = getRouterParams(event)
   
   try {
-    return await getStack(stackName!)
+    return await getStack(projectName!, stackName!)
   } catch (error) {
     console.error('Error fetching stack:', error)
     throw createError({

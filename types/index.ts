@@ -18,6 +18,7 @@ export interface Stack {
 export interface GetStackResponse {
   resources: Resource[]
   outputs: Record<string, string>
+  readme?: string
 }
 
 export interface Resource {

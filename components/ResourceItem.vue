@@ -64,8 +64,7 @@ import type { Resource } from '~/types'
 import ResourceSelect from './ResourceSelect.vue'
 import type { TableColumn } from '@nuxt/ui';
 
-const { stackName, resource, availableResources } = defineProps<{
-    stackName: string
+const { resource, availableResources } = defineProps<{
     resource: Resource
     availableResources: Resource[]
 }>()
@@ -77,6 +76,7 @@ type ResourceProperty = {
 }
 
 const { fetchStackResources } = usePulumiStore()
+const { currentStackName } = storeToRefs(usePulumiStore())
 
 const columns: TableColumn<ResourceProperty>[] = [
     {
@@ -115,7 +115,7 @@ const saveEdit = async () => {
             const newName = editingResource.value.name
 
             // Call the backend API to rename the resource
-            const response = await $fetch(`/api/projects/${projectName}/stacks/${stackName}/resources/${encodeURIComponent(urn)}/rename`, {
+            const response = await $fetch(`/api/projects/${projectName}/stacks/${currentStackName.value}/resources/${encodeURIComponent(urn)}/rename`, {
                 method: 'POST',
                 body: {
                     newName: newName

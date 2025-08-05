@@ -29,6 +29,7 @@ export const listProjects = async () =>
   ) as Project[];
 
 export const getStack = async (
+  projectName: string,
   stackName: string
 ) => {
   try {
@@ -37,13 +38,15 @@ export const getStack = async (
         `stack`,
         `export`,
         `--stack`,
-        stackName,
+        `organization/${projectName}/${stackName}`,
       ]).toString()
     ) as StateData;
     const stackOutputs = JSON.parse(
       execFileSync(`${getPulumiBin()}`, [
         `stack`,
         `output`,
+        `--stack`,
+        `organization/${projectName}/${stackName}`,
         `--json`,
       ]).toString()
     ) as Record<string, string>;
@@ -51,6 +54,7 @@ export const getStack = async (
     return {
       resources: stackResources.deployment.resources,
       outputs: stackOutputs,
+      readme: undefined,
     } as GetStackResponse;
 
   } catch (error) {

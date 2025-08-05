@@ -46,13 +46,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import type { Stack, Resource } from '~/types'
+import { ref } from 'vue'
+import type { GetStackResponse, Stack } from '~/types'
 import ResourceList from './ResourceList.vue'
 import ResourceGraph from './ResourceGraph.vue'
 
 const {stack} = defineProps<{
-  stack: Stack | null
+  stack: GetStackResponse
 }>();
 
 const viewMode = ref<'list' | 'graph'>('list')

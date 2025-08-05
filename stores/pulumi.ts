@@ -19,10 +19,10 @@ export interface PulumiStack {
 
 export const usePulumiStore = defineStore("pulumi", () => {
   const projects = ref<Project[]>([]);
-  const currentProject = ref<Project>();
+  const currentProjectName = ref<string>();
 
   const stacks = ref<SimpleStack[]>([]);
-  const currentStack = ref<SimpleStack>();
+  const currentStackName = ref<string>();
 
   const currentStackDetails = ref<GetStackResponse>();
   const loading = ref(false);
@@ -51,8 +51,8 @@ export const usePulumiStore = defineStore("pulumi", () => {
 
   const fetchStacks = async () => {
     try {
-      console.log("Fetching stacks:", currentProject.value!.name);
-      const data = await $fetch(`/api/projects/${currentProject.value!.name}`);
+      console.log("Fetching stacks:", currentProjectName.value);
+      const data = await $fetch(`/api/projects/${currentProjectName.value}`);
       console.log("Stack data received:", data);
       stacks.value = data;
     } catch (error) {
@@ -66,8 +66,8 @@ export const usePulumiStore = defineStore("pulumi", () => {
 
     try {
       const response = await $fetch(
-        `/api/projects/${currentProject.value!.name}/stacks/${
-          currentStack.value!.name
+        `/api/projects/${currentProjectName.value}/stacks/${
+          currentStackName.value
         }`
       );
       currentStackDetails.value = response;
@@ -80,7 +80,7 @@ export const usePulumiStore = defineStore("pulumi", () => {
   };
 
   const clearCurrentStack = () => {
-    currentStack.value = undefined;
+    currentStackName.value = undefined;
   };
 
   const clearError = () => {
@@ -90,11 +90,12 @@ export const usePulumiStore = defineStore("pulumi", () => {
   return {
     fetchProjects,
     projects: readonly(projects),
-    currentProject,
+    currentProjectName,
 
     fetchStacks,
     stacks: readonly(stacks),
-    currentStack,
+    currentStackName,
+    currentStackDetails,
 
     loading: readonly(loading),
     error: readonly(error),

@@ -25,7 +25,7 @@ const expandedProject = ref<string>()
 
 const route = useRoute()
 
-const { projects, stacks, currentProject, currentStack } = storeToRefs(usePulumiStore())
+const { projects, stacks, currentProjectName, currentStackName } = storeToRefs(usePulumiStore())
 const { fetchProjects, fetchStacks, fetchStackResources } = usePulumiStore()
 
 onMounted(() => {
@@ -41,8 +41,8 @@ watch([projects, () => route.params.projectName], () => {
 
 watch(expandedProject, () => {
   if (expandedProject.value) {
-    currentProject.value = projects.value.find(project => project.name === expandedProject.value)
-    if (!currentProject.value) {
+    currentProjectName.value = projects.value.find(project => project.name === expandedProject.value)?.name
+    if (!currentProjectName.value) {
       window.alert('Project not found')
     }
     else {
@@ -53,8 +53,8 @@ watch(expandedProject, () => {
 
 watch([stacks, () => route.params.stackName], () => {
   if (route.params.stackName) {
-    currentStack.value = stacks.value.find(stack => stack.name === route.params.stackName)
-    if (!currentStack.value) {
+    currentStackName.value = stacks.value.find(stack => stack.name === route.params.stackName)?.name
+    if (!currentStackName.value) {
       window.alert('Stack not found')
     }
     else {

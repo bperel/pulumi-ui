@@ -8,7 +8,6 @@
     <ResourceItem
       v-for="resource in stack.resources"
       :key="resource.urn"
-      :stack-name="stack.name"
       :resource="resource"
       :available-resources="stack.resources.filter(r => r.urn !== resource.urn)"
     />
@@ -16,10 +15,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Stack } from '~/types'
+import type { GetStackResponse } from '~/types'
 import ResourceItem from './ResourceItem.vue'
 
 const {stack} = defineProps<{
-  stack: Stack
+  stack: GetStackResponse
 }>()
 </script> 
