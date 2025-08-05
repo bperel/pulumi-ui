@@ -46,27 +46,22 @@
               v-if="expandedProject === project.name"
               class="ml-6 space-y-1"
             >
-              <button
+              <UButton
                 v-for="stack in stacks"
                 :key="stack.name"
+                :color="isSelectedStack(project.name, stack.name) ? 'primary' : 'neutral'"
                 class="w-full flex items-center space-x-2 p-2 rounded hover:bg-gray-50 text-left"
-                :class="{
-                  'bg-blue-50 text-blue-600': isSelectedStack(
-                    project.name,
-                    stack.name
-                  ),
-                }"
                 @click="selectStack(project.name, stack.name)"
               >
                 <UIcon name="i-heroicons-cube" class="w-4 h-4" />
                 <span class="text-sm">{{ stack.name }}</span>
-                <UIBadge
-                  color="blue"
+                <UBadge
+                  color="primary"
                   size="sm"
                 >
                   {{ stack.resourceCount }}
-                </UIBadge>
-              </button>
+                </UBadge>
+              </UButton>
             </div>
           </div>
         </div>

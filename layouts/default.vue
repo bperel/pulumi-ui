@@ -40,7 +40,6 @@ watch([projects, () => route.params.projectName], () => {
 })
 
 watch(expandedProject, () => {
-  debugger
   if (expandedProject.value) {
     currentProject.value = projects.value.find(project => project.name === expandedProject.value)
     if (!currentProject.value) {

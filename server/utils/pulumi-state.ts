@@ -10,7 +10,7 @@ export interface StateData {
 export const getPulumiBin = () => execSync(`which pulumi`).toString().trim();
 
 export const listStacks = async (projectName: string) =>
-  JSON.parse(
+  (JSON.parse(
     execFileSync(`${getPulumiBin()}`, [
       "stack",
       "ls",
@@ -18,7 +18,10 @@ export const listStacks = async (projectName: string) =>
       projectName,
       "--json",
     ]).toString()
-    ) as SimpleStack[];
+    ) as SimpleStack[]).map(stack => ({
+      ...stack,
+      name: stack.name.replace(`organization/${projectName}/`, '')
+    }));
 
 export const listProjects = async () =>
   JSON.parse(
